@@ -19,56 +19,55 @@ from sklearn.pipeline import make_pipeline
 from funzioni import calibrated, uncalibrated
 
 
-#importo il dataset
+#import dataset
 data = root_pandas.read_root('./candidati1200_3.root', 'toFormat')
 
-#importo il dizionario delle variabili
+#import variable dicitonary and define the ones to work with
 config_dict= fetch_configuration()
 config2= 'btag_pt'
 config= 'all'
-
-#definisco variabili per le funzioni
 n_rows = data.shape[0]
 truth1= 'Higgs_truth1'
 
-#gestisco dimensioni del dataset:
-''' mantengo le proporzioni di segnale e fondo originali (1 a 56) ma riduco le dimensioni del dataset a 14782 in modo da ottimizzare '''
+
+''' Here I have to manage the dataset dimensions.
+To optimize the performance, the ratio between signal and background is kept constant (1 to 56) 
+but the dataset is reduce to  14782 
+'''
+
 signal_df_new = data.query("Higgs_truth1==1").sample(n=4*263)
 fondo_df_new = (data.query("Higgs_truth1 == 0")).sample(n= 56*len(data.query("Higgs_truth1==1")  ))
 df= [fondo_df_new, signal_df_new]
 df_new = pd.concat(df)
 df_new = df_new.query(config_dict[config]['bin'])
 
-
-
-
 #splitting 
 X_train, X_test = train_test_split(df_new, test_size=0.3)
 
-#tutte le variabili
+#take all variables
 X_train_all_variables, X_test_all_variables = X_train.query(config_dict[config]['presel']), X_test.query(config_dict[config]['presel'])
 
-#prendo solo le variabili di interesse al problema
+#extract only the relevant variables
 X_train, X_test = X_train_all_variables[config_dict[config]['variables']], X_test_all_variables[config_dict[config]['variables']]
 
-#creo le etichette di verita
+#create truth lables
 y_train, y_test = X_train_all_variables[truth1].values, X_test_all_variables[truth1].values
 
-#Implemento LDA per ridurre la dimensionalita
+#Implement LDA to reduce dimensionality
 lda = LinearDiscriminantAnalysis()
 trainX= lda.fit_transform(X_train,y_train)
 testX= lda.transform(X_test)
 
-#implemento il clasificatore
+#define the classifier
 svc = svm.SVC(kernel='linear',probability = True)
 
 #fitting
 svc.fit(trainX,y_train)
 
-#previsioni
+#make predictions
 y_pred = svc.predict_proba(testX)[:,1]
 
-#recupero info per roc curve
+#retrive info for roc curve
 fpr, tpr, thresholds = roc_curve(y_test, y_pred)
 roc_auc = auc(fpr, tpr)
 fig_roc, ax_roc = plt.subplots(figsize=(7, 5))
@@ -82,7 +81,7 @@ ax_roc.set_title('receiver operating curve'+ config  )
 ax_roc.legend(loc="lower right")
 fig_roc.savefig(  'roc'+ config  + '.png', format='png')
 
-# valuto efficienze coi working point
+# evaluate efficiencies at given working points
 tpr10 =[]
 tpr1 =[]
 t10=[]
