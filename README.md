@@ -12,6 +12,7 @@ The actual optimisation has been done only for the BDT, since it is also my BSc 
 
 ## Config.py file
 You may have noticed the config.py file. It contains a dictionary with all the variables for different analysis configurations. 
-The reason is because, as mentioned above, there can be both fat and narrow jets, and we may have situations where we have 2 narrow or 1 fat jets. The former is called resolved configuration, the latter is called resolved.
+The reason is because, as mentioned above, there can be both fat and narrow jets (ak4 and ak8), and we may have situations where we have 2 narrow or 1 fat jets. The former is called resolved configuration, the latter is called merged.
 Based on some physics considerations (I am happy to discuss it via mail!), you may want to select different configurations (hence differnet kinematic variables) but also different energy tresholds.
 Basicaly in every ML algorithm you will select a configuration and an energy regime in the config dictionary.
+
