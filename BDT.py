@@ -12,10 +12,9 @@ from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
 from My_config import fetch_configuration 
 from funzioni import compare_train_test
 
-#Here I define some configuration variables, in order to not write them all the time
+#Define some configuration variables, in order to not write them all the time
 
-
-Under100
+#Under100
 conf1= '100'
 png1 = './'+ conf1 
 
@@ -63,7 +62,7 @@ if(np.count_nonzero(y_train) == 0 | np.count_nonzero(y_test) == 0):
    print("No data in configuration: ", config)
 
 
- #Hyperparameters:
+ #Hyperparameters: (those are the result of a grid search)
 n_estimators = 130
 learning_rate = 0.1
 max_depth = 4
