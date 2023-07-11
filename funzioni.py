@@ -18,31 +18,31 @@ from sklearn.model_selection import learning_curve
 from sklearn.model_selection import StratifiedKFold
 from sklearn.model_selection import cross_val_score
 
-# La funzione crea il modello e restituisce CV score, train score e i dati della LC
+# Creats model and returns  CV score, train score and LC data
 def learn_curve(X,y,c):
     
-    # Scaling delle features
+    # Scaling  features
     sc = StandardScaler() 
      # LogisticRegression model
     log_reg = LogisticRegression(max_iter=200,random_state=11,C=c)
-    # Pipeline con scaling e classificazione
+    # Pipeline with scaling and classification
     lr = Pipeline(steps=(['scaler',sc],
                         ['classifier',log_reg]))
     
-    # Creo StratifiedKFold con 5 folds
+    # Create StratifiedKFold with 5 folds
     cv = StratifiedKFold(n_splits=5,random_state=11,shuffle=True) 
-    # Salvo i CV scores di ogni of each fold
+    # Save  CV scores  of each fold
     cv_scores = cross_val_score(lr,X,y,scoring="accuracy",cv=cv) 
     
-    # Fitting del modello
+    # Fitting 
     lr.fit(X,y) 
-    #Scoring del modello sul train set
+    #Scoring on train set
     train_score = lr.score(X,y) 
     
-    #Creo la learning curve
+    #Create learning curve
     train_size,train_scores,test_scores = learning_curve(estimator=lr,X=X,y=y,cv=cv,scoring="accuracy",random_state=11)
     
-    #converto accuracy score in  misclassification rate
+    #convert accuracy score in  misclassification rate
     train_scores = 1-np.mean(train_scores,axis=1)
     test_scores = 1-np.mean(test_scores,axis=1)
     
