@@ -15,7 +15,8 @@ from sklearn.datasets import make_classification
 from sklearn.model_selection import cross_val_score
 from sklearn.model_selection import RepeatedStratifiedKFold
 from sklearn.ensemble import RandomForestClassifier
-#from funzioni import compare_train_test
+
+#Here I define some configuration variables, in order to not write them all the time
 
 #Under100
 conf1= '100'
@@ -28,7 +29,7 @@ conf2= 'U250'
 #Over250
 conf3= 'O250'
 
-
+#Here I define the desired configuration to work with, the truth lable and the path to the file 
 config=conf3
 path= './130/'
 png_name= path + config
@@ -36,32 +37,31 @@ config_dict=fetch_configuration()
 truth1='Higgs_truth1'  
 
 
-#importo il dataset
+#import dataset
 data = root_pandas.read_root('./candidati1200_3.root', 'toFormat')
-#print data.shape
 data_new = root_pandas.read_root('./candidati1200_3.root', 'toFormat')
 data_pretrain = data_new
 
-#seleziono solo gli eventi con le features compatibili con la fisica del problema
+#Event selection based on the physics
 data= data.query('jet1_mass>=80' and 'jet1_mass<= 160')
 data=data.query( 'jet2_mass>=80' and 'jet2_mass<= 160')
 data = data.query(config_dict[config]['bin'])
 
-#il secondo dataset prende tutte le variabili
+#Second dataset takes all varibles 
 data_new = data_new[config_dict[config]['variables']]
 
 #splitting 
 X_train, X_test = train_test_split(data, test_size=0.3)
 
-#Prendo X_train e X_test con tutte le colonne 
+#Take X_train e X_test with every column
 X_train_all_variables, X_test_all_variables = X_train.query(config_dict[config]['presel']), X_test.query(config_dict[config]['presel'])
 X_train, X_test = X_train_all_variables[config_dict[config]['variables']], X_test_all_variables[config_dict[config]['variables']]
 
-#creo le etichette di verita
+#Define truth lables
 y_train, y_test = X_train_all_variables[truth1].values, X_test_all_variables[truth1].values
 
 
-#questo e' un test
+#Just a test to makesure there is data
 if(np.count_nonzero(y_train) == 0 | np.count_nonzero(y_test) == 0):
    print("No data in configuration: ", config)
 
@@ -106,43 +106,18 @@ for idx in range(len(tpr)):
       tpr1.append(tpr[idx])
       t1.append(thresholds[idx])
 
-#salvo i tpr
+#save tpr
 np.savetxt(path+ 'tpr10_' + config +'.csv', tpr10, delimiter=',')
 np.savetxt(path+'tpr1_'+config +'.csv', tpr1, delimiter=',')
 
-#salvo le soglie
+#save threhsolds
 np.savetxt(path+'tpr_soglie10_'+config+'.csv', t10, delimiter=',')
 np.savetxt(path+'tpr_soglie1_'+config+'.csv', t1, delimiter=',')
 
-#salvo i fpr
+#save fpr
 np.savetxt(path+'fpr10_'+config+'.csv', fpr, delimiter=',')
 
-#creo file root
-'''
-data_new['Signal_Score_'+ config]=y_pred_data
-data_new['Bkg_score_'+ config]= bkpred
-data_new["Higgs_resolved"]=data_pretrain['Higgs_resolved']
-data_new["Higgs_merged"]=data_pretrain['Higgs_merged']
-data_new["Higgs_truth1"]=data_pretrain['Higgs_truth1']
-data_new.to_root('dataset_m1200_with_score'  + config+  '.root','ml' )
-'''
-'''#plot logloss
 
-res = model_rf.evals_result()
-fig, ax = plt.subplots(figsize=(12,12))
-ax.plot(range(0, len(res['validation_0']['logloss'])), res['validation_0']['logloss'], label='Train')
-ax.plot(range(0, len(res['validation_1']['logloss'])), res['validation_1']['logloss'], label='Test')
-ax.legend()
-plt.ylabel('LogLoss')
-plt.title(' Andamento LogLoss'+  config)
-'''
-  
-#funzione di visualizazione output della bdt   
-#compare_train_test(model_rf, X_train, y_train, X_test, y_test, config, png_name)
-
-#plot del tree
-#tplot = tree.plot_tree(model_rf)
-#tplot.figure.savefig(png_name)
 
 #roc curve
 roc_auc = auc(fpr, tpr)
