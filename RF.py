@@ -61,7 +61,7 @@ X_train, X_test = X_train_all_variables[config_dict[config]['variables']], X_tes
 y_train, y_test = X_train_all_variables[truth1].values, X_test_all_variables[truth1].values
 
 
-#Just a test to makesure there is data
+#Just a test to make sure there is data
 if(np.count_nonzero(y_train) == 0 | np.count_nonzero(y_test) == 0):
    print("No data in configuration: ", config)
 
