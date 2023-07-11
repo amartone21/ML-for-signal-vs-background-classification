@@ -54,10 +54,10 @@ X_train, X_test = train_test_split(data, test_size=0.3)
 X_train_all_variables, X_test_all_variables = X_train.query(config_dict[config]['presel']), X_test.query(config_dict[config]['presel'])
 X_train, X_test = X_train_all_variables[config_dict[config]['variables']], X_test_all_variables[config_dict[config]['variables']]
 
-#Just a test to make sure there is data
+#define truth lables
 y_train, y_test = X_train_all_variables[truth1].values, X_test_all_variables[truth1].values
 
-#questo e' un test
+#Just a test to make sure there is data
 if(np.count_nonzero(y_train) == 0 | np.count_nonzero(y_test) == 0):
    print("No data in configuration: ", config)
 
