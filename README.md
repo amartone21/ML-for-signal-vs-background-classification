@@ -1,5 +1,5 @@
 # Machine learning for physics project
-Project for MAAF (machine learning methods for physics) exam.
+Project for Metodi di Apprendimento Automatico  (machine learning methods for physics) exam.
 This projects consist in the application of different machine learning models on a dataset consisting of Cern's CMS experiment (simulated) data. The goal is to discriminate between signal and background for the Higgs to anti-b b process, where the two b quarks produce jets which can be fat or narrow jets, based on their radious.
 
 The techniques used are: 
