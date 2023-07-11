@@ -18,7 +18,7 @@ from sklearn.linear_model import LogisticRegression
 from funzioni import learn_curve 
 import seaborn as sns
 
-#importo dal dizionario le variabili che mi servono
+#import the needed variables from from dictionary 
 config_dict=fetch_configuration()
 conf1= '100'
 conf2 = 'U250'
@@ -26,32 +26,25 @@ conf3 = 'O250'
 
 config= 'all'
 
-#scelgo se analizzare ak4 o ak8
+#Choose wether to analyse the merged or resolved configuration. 1 is resolved
 truth1='Higgs_truth1'  
 
-
-#importo il dataset
+#import dataset
 data = root_pandas.read_root('./candidati1200_3.root', 'toFormat')
 
-'''
-#splitting 
-X_train, X_test = train_test_split(data, test_size=0.3)
-''' 
 
-#Prendo X_train e X_test con tutte le colonne 
+#Take X_train e X_test with every column
 X_all  = data.query(config_dict[config]['presel'])
 X = X_all[config_dict[config]['variables']]
 
-#creo le etichette di verita
+#define truth lables
 y = X_all[truth1].values
 
-
-
-
-#questo e' un test
+#Just a test to make sure there is data
 if(np.count_nonzero(y) == 0 | np.count_nonzero(y_test) == 0):
    print("No data in configuration: ", config)
    
+#Here the classification really happens usint the logistic regression
 lc = learn_curve(X,y,1)
 print('Cross Validation Accuracies:', list(lc["cv_scores"]))
 print ('Mean Cross Validation Accuracy:', np.mean(lc["cv_scores"]))
@@ -95,13 +88,14 @@ for idx in range(len(tpr)):
 
 print(' il max al 10 in configurazione', np.amax(tpr10))
 print(' il max al 1:', np.amax(tpr1))
-#salvo i tpr
+
+#save tpr
 np.savetxt('tpr10.csv', tpr10, delimiter=',')
 np.savetxt('tpr1.csv', tpr1, delimiter=',')
 
-#salvo le soglie
+#save threhsolds
 np.savetxt('tpr_soglie10.csv', t10, delimiter=',')
 np.savetxt('tpr_soglie1.csv', t1, delimiter=',')
 
-#salvo i fpr
+#save fpr
 np.savetxt('fpr.csv', fpr, delimiter=',')
