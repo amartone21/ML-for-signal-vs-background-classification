@@ -12,7 +12,10 @@ from sklearn.metrics import classification_report, roc_auc_score, accuracy_score
 from My_config import fetch_configuration 
 from funzioni import compare_train_test
 
-#Under100
+#Here I define some configuration variables, in order to not write them all the time
+
+
+Under100
 conf1= '100'
 png1 = './'+ conf1 
 
@@ -24,6 +27,7 @@ png2 = './'+ conf2
 conf3= 'O250'
 png3 = './'+ conf3
 
+#Here I define the desired configuration to work with, the truth lable and the path to the file 
 
 config=conf3
 png_name= png3
@@ -31,27 +35,27 @@ config_dict=fetch_configuration()
 truth1='Higgs_truth1'  
 truth2='Higgs_truth2'
 
-#importo il dataset
+#import il dataset
 data = root_pandas.read_root('./candidati1200_3.root', 'toFormat')
 data_new = root_pandas.read_root('./candidati1200_3.root', 'toFormat')
 data_pretrain = data_new
 
-#seleziono solo gli eventi con le features compatibili con la fisica del problema
+#Event selection based on the physics
 data= data.query('jet1_mass>=80' and 'jet1_mass<= 160')
 data=data.query( 'jet2_mass>=80' and 'jet2_mass<= 160')
 data = data.query(config_dict[config]['bin'])
 
-#il secondo dataset prende tutte le variabili
+#Second dataset takes all varibles 
 data_new = data_new[config_dict[config]['variables']]
 
 #splitting 
 X_train, X_test = train_test_split(data, test_size=0.3)
 
-#Prendo X_train e X_test con tutte le colonne 
+#Take X_train e X_test with every column
 X_train_all_variables, X_test_all_variables = X_train.query(config_dict[config]['presel']), X_test.query(config_dict[config]['presel'])
 X_train, X_test = X_train_all_variables[config_dict[config]['variables']], X_test_all_variables[config_dict[config]['variables']]
 
-#creo le etichette di verita
+#Just a test to make sure there is data
 y_train, y_test = X_train_all_variables[truth1].values, X_test_all_variables[truth1].values
 
 #questo e' un test
@@ -102,18 +106,20 @@ for idx in range(len(tpr)):
       tpr1.append(tpr[idx])
       t1.append(thresholds[idx])
 
-#salvo i tpr
+#save tpr
 np.savetxt('tpr10.csv', tpr10, delimiter=',')
 np.savetxt('tpr1.csv', tpr1, delimiter=',')
 
-#salvo le soglie
+#save threhsolds
 np.savetxt('tpr_soglie10.csv', t10, delimiter=',')
 np.savetxt('tpr_soglie1.csv', t1, delimiter=',')
 
-#salvo i fpr
+#save fpr
 np.savetxt('fpr10.csv', fpr, delimiter=',')
 
-#creo file root
+''create  root file to compare the Higgs mass obtained 
+with the BDT and the cut-based approach'''
+
 data_new['Signal_Score_'+ config]=y_pred_data
 data_new['Bkg_score_'+ config]= bkpred
 data_new["Higgs_resolved"]=data_pretrain['Higgs_resolved']
@@ -131,7 +137,7 @@ plt.ylabel('LogLoss')
 plt.title(' Andamento LogLoss'+  config)
 fig.savefig( png_name + 'logloss'+ '.png')
   
-#funzione di visualizazione output della bdt   
+#visualize the output of the bdt  
 compare_train_test(model_bdt, X_train, y_train, X_test, y_test, config, png_name)
 
 #feature importance plot
